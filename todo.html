@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+</head>
+<body>
+    <h1>To-Do List</h1>
+    <input type="text" id="taskInput" placeholder="Enter your task">
+    <button onclick="addTask()">Add Task</button>
+
+    <ul id="taskList"></ul>
+
+    <script>
+        // Task object constructor
+        function Task(name) {
+            this.name = name;
+            this.dateAdded = new Date().toLocaleString();
+        }
+
+        // Task Manager object
+        const taskManager = {
+            tasks: [],
+            
+            // Add a new task
+            addTask(taskName) {
+                const newTask = new Task(taskName);
+                this.tasks.push(newTask);
+                this.displayTasks();
+            },
+
+            // Delete a task
+            deleteTask(index) {
+                this.tasks.splice(index, 1);
+                this.displayTasks();
+            },
+
+            // Display tasks
+            displayTasks() {
+                const taskList = document.getElementById('taskList');
+                taskList.innerHTML = '';
+                this.tasks.forEach((task, index) => {
+                    const listItem = document.createElement('li');
+                    listItem.innerHTML = `${task.name} - Added on: ${task.dateAdded} 
+                    <button onclick="deleteTask(${index})">Delete</button>`;
+                    taskList.appendChild(listItem);
+                });
+            }
+        };
+
+        // Function to handle adding a task
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskName = taskInput.value;
+            if (taskName.trim()) {
+                taskManager.addTask(taskName);
+                taskInput.value = ''; // Clear input field after adding
+            } else {
+                alert("Please enter a valid task.");
+            }
+        }
+
+        // Function to delete a task
+        function deleteTask(index) {
+            taskManager.deleteTask(index);
+        }
+    </script>
+</body>
+</html>
