@@ -3,77 +3,47 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-Do App</title>
+    <title>Simple To-Do List</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #taskInput { width: 70%; padding: 10px; }
+        button { padding: 10px; margin-left: 10px; }
+        ul { list-style-type: none; padding: 0; }
+        li { margin-bottom: 10px; }
+        li.checked span { text-decoration: line-through; }
+    </style>
 </head>
 <body>
     <h1>To-Do List</h1>
-    <input type="text" id="taskInput" placeholder="Enter your task">
+    <input type="text" id="taskInput" placeholder="Enter task">
     <button onclick="addTask()">Add Task</button>
-
     <ul id="taskList"></ul>
 
     <script>
-        // Task object constructor
-        function Task(name) {
-            this.name = name;
-            this.dateAdded = new Date().toLocaleString();
-        }
-
-        // Task Manager object
-        const taskManager = {
-            tasks: [],
-            
-            // Add a new task
-            addTask(taskName) {
-                const newTask = new Task(taskName);
-                this.tasks.push(newTask);
-                this.displayTasks();
-            },
-
-            // Delete a task
-            deleteTask(index) {
-                this.tasks.splice(index, 1);
-                this.displayTasks();
-            },
-
-            // Display tasks
-            displayTasks() {
-                const taskList = document.getElementById('taskList');
-                taskList.innerHTML = '';
-                this.tasks.forEach((task, index) => {
-                    const listItem = document.createElement('li');
-                    listItem.innerHTML = `${task.name} - Added on: ${task.dateAdded} 
-                    <button onclick="deleteTask(${index})">Delete</button>`;
-                    taskList.appendChild(listItem);
-                });
-            }
-        };
-
-        // Function to handle adding a task
         function addTask() {
-            const taskInput = document.getElementById('taskInput');
-            const taskName = taskInput.value;
-            if (taskName.trim()) {
-                taskManager.addTask(taskName);
-                taskInput.value = ''; // Clear input field after adding
-            } else {
-                alert("Please enter a valid task.");
-            }
+            const taskText = document.getElementById('taskInput').value.trim();
+            if (taskText === "") return alert("Please enter a task.");
+
+            const taskElement = document.createElement('li');
+            taskElement.innerHTML = `
+                <input type="checkbox" onchange="this.parentNode.classList.toggle('checked')">
+                <span>${taskText}</span>
+                <button onclick="editTask(this)">Edit</button>
+                <button onclick="deleteTask(this)">Delete</button>
+            `;
+
+            document.getElementById('taskList').appendChild(taskElement);
+            document.getElementById('taskInput').value = '';
         }
 
-        // Function to delete a task
-        function deleteTask(index) {
-            taskManager.deleteTask(index);
+        function editTask(button) {
+            const taskSpan = button.parentNode.querySelector('span');
+            const newTask = prompt('Edit your task:', taskSpan.textContent);
+            if (newTask !== null && newTask.trim() !== "") taskSpan.textContent = newTask.trim();
         }
 
-        // Function to edit a task
-        function editTask(index) {
-            taskManager.editTask(index);
-        }
-        
-        // Function to checkbox a task
-        function checkboxTask(index) {
-            taskManager.checkboxTask(index);
+        function deleteTask(button) {
+            button.parentNode.parentNode.removeChild(button.parentNode);
         }
     </script>
 </body>
