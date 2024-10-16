@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do App</title>
+</head>
+<body>
+    <h1>To-Do List</h1>
+    <input type="text" id="taskInput" placeholder="Enter your task">
+    <button onclick="addTask()">Add Task</button>
+
+    <ul id="taskList"></ul>
+
+    <script>
+        // Task object constructor
+        function Task(name) {
+            this.name = name;
+            this.dateAdded = new Date().toLocaleString();
+            this.isCompleted = false; // To handle checklist
+        }
+
+        // Task Manager object
+        const taskManager = {
+            tasks: [],
+            
+            // Add a new task
+            addTask(taskName) {
+                const newTask = new Task(taskName);
+                this.tasks.push(newTask);
+                this.displayTasks();
+            },
+
+            // Delete a task
+            deleteTask(index) {
+                this.tasks.splice(index, 1);
+                this.displayTasks();
+            },
+
+            // Edit a task
+            editTask(index, newName) {
+                this.tasks[index].name = newName;
+                this.displayTasks();
+            },
+
+            // Toggle task completion (for checklist)
+            toggleTaskCompletion(index) {
+                this.tasks[index].isCompleted = !this.tasks[index].isCompleted;
+                this.displayTasks();
+            },
+
+            // Display tasks
+            displayTasks() {
+                const taskList = document.getElementById('taskList');
+                taskList.innerHTML = '';
+                this.tasks.forEach((task, index) => {
+                    const listItem = document.createElement('li');
+
+                    // Strike-through completed tasks
+                    listItem.style.textDecoration = task.isCompleted ? 'line-through' : 'none';
+
+                    // Task item content
+                    listItem.innerHTML = `
+                        <input type="checkbox" ${task.isCompleted ? 'checked' : ''} onclick="toggleTaskCompletion(${index})">
+                        <span>${task.name}</span> - Added on: ${task.dateAdded}
+                        <button onclick="editTaskPrompt(${index})">Edit</button>
+                        <button onclick="deleteTask(${index})">Delete</button>
+                    `;
+
+                    taskList.appendChild(listItem);
+                });
+            }
+        };
+
+        // Function to handle adding a task
+        function addTask() {
+            const taskInput = document.getElementById('taskInput');
+            const taskName = taskInput.value;
+            if (taskName.trim()) {
+                taskManager.addTask(taskName);
+                taskInput.value = ''; // Clear input field after adding
+            } else {
+                alert("Please enter a valid task.");
+            }
+        }
+
+        // Function to delete a task
+        function deleteTask(index) {
+            taskManager.deleteTask(index);
+        }
+
+        // Function to edit a task
+        function editTaskPrompt(index) {
+            const newTaskName = prompt("Edit task:", taskManager.tasks[index].name);
+            if (newTaskName && newTaskName.trim()) {
+                taskManager.editTask(index, newTaskName);
+            } else {
+                alert("Please enter a valid task name.");
+            }
+        }
+
+        // Function to toggle task completion
+        function toggleTaskCompletion(index) {
+            taskManager.toggleTaskCompletion(index);
+        }
+    </script>
+</body>
+</html>
